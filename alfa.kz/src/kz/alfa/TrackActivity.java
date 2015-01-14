@@ -9,15 +9,12 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
-
-import android.app.ActionBar.LayoutParams;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Window;
 import android.widget.CheckBox;
@@ -53,7 +50,8 @@ public class TrackActivity extends FragmentActivity {
 			// To programmatically add the map, we first create a
 			// SupportMapFragment.
 			mMapFragment = SupportMapFragment.newInstance();
-			//mMapFragment.getActivity().addContentView(cb,					new LayoutParams(Gravity.CENTER_VERTICAL));
+			// mMapFragment.getActivity().addContentView(cb, new
+			// LayoutParams(Gravity.CENTER_VERTICAL));
 			// Then we add it using a FragmentTransaction.
 			FragmentTransaction fragmentTransaction = getSupportFragmentManager()
 					.beginTransaction();
@@ -74,6 +72,8 @@ public class TrackActivity extends FragmentActivity {
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_SETTINGS)
+			setUpMap();
 		if ((System.currentTimeMillis() - backMills) >= 3000)
 			if (keyCode == KeyEvent.KEYCODE_BACK) {
 				// Log.e(LOG_TAG,
@@ -81,7 +81,6 @@ public class TrackActivity extends FragmentActivity {
 				Toast.makeText(this, "to exit press back again (in 3 sec)",
 						Toast.LENGTH_SHORT).show();
 				backMills = System.currentTimeMillis();
-				setUpMap();
 				return false;
 			}
 		return super.onKeyDown(keyCode, event);
@@ -93,7 +92,7 @@ public class TrackActivity extends FragmentActivity {
 
 		// In case Google Play services has since become available.
 		setUpMapIfNeeded();
-		//setUpMap();
+		// setUpMap();
 	}
 
 	private void setUpMapIfNeeded() {
@@ -143,6 +142,7 @@ public class TrackActivity extends FragmentActivity {
 			Log.e("TrackMActivity", whoS + " getContentResolver getCount = "
 					+ cursor.getCount());
 			if (cursor.moveToFirst()) {
+				MarkerOptions first = null;
 				do {
 					double lat1 = cursor.getDouble(cursor
 							.getColumnIndex("Latitude"));
@@ -150,6 +150,12 @@ public class TrackActivity extends FragmentActivity {
 							.getColumnIndex("Longitude"));
 					String tit = (new Date(cursor.getLong(cursor
 							.getColumnIndex("DTime")))).toString();
+					if (first == null) {
+						first = new MarkerOptions()
+						.position(new LatLng(lat1, lon1))
+						.title(tit);
+						mMap.addMarker(first);
+					}
 					mMap.addMarker(new MarkerOptions()
 							.anchor(0.5f, 0.5f)
 							.icon(BitmapDescriptorFactory
