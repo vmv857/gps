@@ -55,7 +55,7 @@ public class TrackActivity extends FragmentActivity {
 			// Then we add it using a FragmentTransaction.
 			FragmentTransaction fragmentTransaction = getSupportFragmentManager()
 					.beginTransaction();
-			fragmentTransaction.add(android.R.id.content, mMapFragment,
+			fragmentTransaction.add(R.id.map_fragment, mMapFragment,
 					MAP_FRAGMENT_TAG);
 			// mMapFragment.bring
 			// fragmentTransaction.add(android.R.id.content, ,
@@ -103,12 +103,15 @@ public class TrackActivity extends FragmentActivity {
 			mMap = mMapFragment.getMap();// tExtendedMap();
 			// Check if we were successful in obtaining the map.
 			if (mMap != null) {
-				setUpMap();
+				//setUpMap();
+				Log.e(LOG_TAG, "no setUpMap ");
 			}
 		}
 	}
 
 	private void setUpMap() {
+		Log.e(LOG_TAG, "setUpMap !!!");
+
 		PolylineOptions pl;
 		String who = getIntent().getDataString();
 
