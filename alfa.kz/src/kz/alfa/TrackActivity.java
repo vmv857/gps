@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.Window;
 import android.widget.CheckBox;
 import android.widget.Toast;
@@ -23,6 +24,7 @@ import android.widget.Toast;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 public class TrackActivity extends FragmentActivity {
@@ -31,14 +33,14 @@ public class TrackActivity extends FragmentActivity {
 	private GoogleMap mMap;
 	private SupportMapFragment mMapFragment;
 	private long backMills = 0;
-	CheckBox cb;
+	private Polyline plGps;
+	private Polyline plNet;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.activity_track);
-		cb = (CheckBox) findViewById(R.id.checkBox1);
 		// It isn't possible to set a fragment's id programmatically so we set a
 		// tag instead and
 		// search for it using that.
@@ -60,7 +62,7 @@ public class TrackActivity extends FragmentActivity {
 			// mMapFragment.bring
 			// fragmentTransaction.add(android.R.id.content, ,
 			// MAP_FRAGMENT_TAG);
-			fragmentTransaction.addToBackStack(null);
+			//fragmentTransaction.addToBackStack(null);
 			fragmentTransaction.commit();
 		}
 
@@ -184,15 +186,46 @@ public class TrackActivity extends FragmentActivity {
 		}
 		return pl;
 	}
-}
-/*
- * public class TrackActivity extends FragmentActivity { private static String
- * LOG_TAG = "ChatActivity"; SupportMapFragment mMapFragment;
- * 
- * @Override protected void onCreate(Bundle savedInstanceState) {
- * super.onCreate(savedInstanceState); setContentView(R.layout.activity_track);
- * String id = getIntent().getDataString(); } /* <fragment android:id="@+id/map"
- * android:layout_width="match_parent" android:layout_height="match_parent"
- * class="com.google.android.gms.maps.SupportMapFragment" />
- */
 
+	public void onClick_gps(View v) {
+		PolylineOptions pl_gps;
+		Toast.makeText(this, "onClick_gps", Toast.LENGTH_SHORT).show();
+		CheckBox cb = (CheckBox) v;
+		if (cb.isChecked()){
+			String who = getIntent().getDataString();
+			CameraUpdate center = null;
+			pl_gps = getLine("(idwho like '" + who + "' and Provider = 'gps')");
+			plGps = mMap.addPolyline(pl_gps);
+			if (!pl_gps.getPoints().isEmpty())
+				center = CameraUpdateFactory.newLatLng(pl_gps.getPoints().get(0));
+
+			CameraUpdate zoom = CameraUpdateFactory.zoomTo(16);
+			if (center != null){
+				mMap.moveCamera(center);
+				mMap.animateCamera(zoom);
+			}
+		} else if (plGps != null) plGps.remove();			
+	}
+
+	public void onClick_net(View v) {
+		PolylineOptions pl_net;
+		Toast.makeText(this, "onClick_net", Toast.LENGTH_SHORT).show();
+		CheckBox cb = (CheckBox) v;
+		if (cb.isChecked()){
+			String who = getIntent().getDataString();
+			CameraUpdate center = null;
+			pl_net = getLine("(idwho like '" + who + "' and Provider = 'network')");
+			pl_net.color(Color.RED);
+			plNet = mMap.addPolyline(pl_net);
+			if (!pl_net.getPoints().isEmpty())
+				center = CameraUpdateFactory.newLatLng(pl_net.getPoints().get(0));
+
+			CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
+			if (center != null){
+				mMap.moveCamera(center);
+				mMap.animateCamera(zoom);
+			}
+		}else if (plNet != null) plNet.remove();			
+	}
+
+}
