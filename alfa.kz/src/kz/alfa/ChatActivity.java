@@ -17,6 +17,7 @@ import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Rect;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -79,7 +80,6 @@ public class ChatActivity extends FragmentActivity implements
 	private EditText etSend;
 	private CheckBox cbScroll;
 
-	@SuppressLint("NewApi")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		Cnt.set(getApplicationContext());
@@ -134,10 +134,12 @@ public class ChatActivity extends FragmentActivity implements
 									.animate()
 									.translationY(visible ? 0 : mControlsHeight)
 									.setDuration(mShortAnimTime);
-							contentView
-									.animate()
-									.translationY(visible ? mControlsHeight+25 : 0)
+							contentView.animate()
+									.translationY(visible ? 25+getStatusBarHeight() : 0)
 									.setDuration(mShortAnimTime);
+									//.rotation(visible ? 90 : 1);
+							//if (visible)
+								//contentView.set
 						} else {
 							// If the ViewPropertyAnimator APIs aren't
 							// available, simply show or hide the in-layout UI
@@ -251,22 +253,24 @@ public class ChatActivity extends FragmentActivity implements
 
 	public void ClickCBS(View v) {
 		RefreshW();
+		String txt = etSend.getText().toString();
+		if (txt.equals("888")) {
+			Toast.makeText(this, "gps door", Toast.LENGTH_SHORT).show();
+			Intent intent = new Intent(this, ListWActivity.class);
+			startActivity(intent);
+		}
 	}
 
 	public void clickOk(View v) {
 		String txt = etSend.getText().toString();
-		if (txt.length() > 0) {
-			etSend.getText().clear();
-			if (SendTask.taskStarted < 1) {
-				SendTask taskLup = new SendTask();
-				taskLup.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
-						new String[] { txt });
-			}
+		etSend.getText().clear();
+		if (SendTask.taskStarted < 1) {
+			SendTask taskLup = new SendTask();
+			taskLup.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,
+					new String[] { txt });
 		} else {
-			Toast.makeText(this, "¬ведите текст сначала", Toast.LENGTH_SHORT)
+			Toast.makeText(this, "¬ведите текст сначала"+getTitleBarHeight(), Toast.LENGTH_LONG)
 					.show();
-			Intent intent = new Intent(this, ListWActivity.class);
-			startActivity(intent);
 		}
 		RefreshW();
 	}
@@ -340,5 +344,26 @@ public class ChatActivity extends FragmentActivity implements
 	@Override
 	public void onLoaderReset(Loader<Cursor> loader) {
 	}
-
+	 
+	public int getStatusBarHeight() 
+	{ 
+	    int result = 0;
+	    int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+	    if (resourceId > 0) {
+	        result = getResources().getDimensionPixelSize(resourceId);
+	    } 
+	    return result;
+	}
+	
+	public int getStatusBarHeight2() {
+	    Rect r = new Rect();
+	    Window w = getWindow();
+	    w.getDecorView().getWindowVisibleDisplayFrame(r);
+	    return r.top;
+	}
+	 
+	public int getTitleBarHeight() {
+	    int viewTop = getWindow().findViewById(Window.ID_ANDROID_CONTENT).getTop();
+	    return (viewTop - getStatusBarHeight2());
+	}
 }

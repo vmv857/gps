@@ -10,12 +10,14 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 
+import android.app.ActionBar.LayoutParams;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentTransaction;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Window;
 import android.widget.CheckBox;
@@ -33,7 +35,7 @@ public class TrackActivity extends FragmentActivity {
 	private SupportMapFragment mMapFragment;
 	private long backMills = 0;
 	CheckBox cb;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -51,7 +53,7 @@ public class TrackActivity extends FragmentActivity {
 			// To programmatically add the map, we first create a
 			// SupportMapFragment.
 			mMapFragment = SupportMapFragment.newInstance();
-
+			//mMapFragment.getActivity().addContentView(cb,					new LayoutParams(Gravity.CENTER_VERTICAL));
 			// Then we add it using a FragmentTransaction.
 			FragmentTransaction fragmentTransaction = getSupportFragmentManager()
 					.beginTransaction();
@@ -60,6 +62,7 @@ public class TrackActivity extends FragmentActivity {
 			// mMapFragment.bring
 			// fragmentTransaction.add(android.R.id.content, ,
 			// MAP_FRAGMENT_TAG);
+			fragmentTransaction.addToBackStack(null);
 			fragmentTransaction.commit();
 		}
 
@@ -67,16 +70,18 @@ public class TrackActivity extends FragmentActivity {
 		// services might
 		// not be available.
 		setUpMapIfNeeded();
-		cb.bringToFront();
 	}
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if ((System.currentTimeMillis() - backMills) >= 3000)
 			if (keyCode == KeyEvent.KEYCODE_BACK) {
-				//Log.e(LOG_TAG, (System.currentTimeMillis()-backMills)+"onKeyDown KEYCODE_BACK");
-				Toast.makeText(this, "to exit press back again (in 3 sec)", Toast.LENGTH_SHORT).show();			
+				// Log.e(LOG_TAG,
+				// (System.currentTimeMillis()-backMills)+"onKeyDown KEYCODE_BACK");
+				Toast.makeText(this, "to exit press back again (in 3 sec)",
+						Toast.LENGTH_SHORT).show();
 				backMills = System.currentTimeMillis();
+				setUpMap();
 				return false;
 			}
 		return super.onKeyDown(keyCode, event);
@@ -88,6 +93,7 @@ public class TrackActivity extends FragmentActivity {
 
 		// In case Google Play services has since become available.
 		setUpMapIfNeeded();
+		//setUpMap();
 	}
 
 	private void setUpMapIfNeeded() {
@@ -98,7 +104,7 @@ public class TrackActivity extends FragmentActivity {
 			mMap = mMapFragment.getMap();// tExtendedMap();
 			// Check if we were successful in obtaining the map.
 			if (mMap != null) {
-				setUpMap();
+				// setUpMap();
 			}
 		}
 	}

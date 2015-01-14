@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Чат Общий В.М.</string>
+    <string name="dummy_button">OK</string>
+    <string name="dummy_content">Чат</string>
+	<string name="clear">Очистить</string>  
+	<string name="text">Вводить текст сюда</string>  
+	<string name="restore">Восстановить</string>  
+	<string name="refresh">Обновить список</string>  
+</resources>

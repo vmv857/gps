@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Chat General V.M.</string>
+    <string name="dummy_button">OK</string>
+    <string name="dummy_content">Chat</string>
+	<string name="clear">Clear All</string>  
+	<string name="text">Enter text here</string>  
+	<string name="restore">Restore All</string>  
+	<string name="refresh">Refresh list</string>  
+	<string name="test">Test GPS</string>  
+	<string name="list_who_a">List Who</string>  
+	<string name="track_map_a">Track Map External</string>  
+	<string name="track_map_a2">Track Map Internal</string>  
+	<string name="uri_provider">me.noip.allloc.prv</string>  
+</resources>
