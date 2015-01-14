@@ -72,7 +72,7 @@ public class TrackActivity extends FragmentActivity {
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_SETTINGS)
+		if (keyCode == KeyEvent.KEYCODE_MENU)
 			setUpMap();
 		if ((System.currentTimeMillis() - backMills) >= 3000)
 			if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -103,7 +103,7 @@ public class TrackActivity extends FragmentActivity {
 			mMap = mMapFragment.getMap();// tExtendedMap();
 			// Check if we were successful in obtaining the map.
 			if (mMap != null) {
-				// setUpMap();
+				setUpMap();
 			}
 		}
 	}
