@@ -1,6 +1,7 @@
 package kz.alfa;
 
 import java.util.Date;
+import java.util.List;
 
 import kz.alfa.util.Log;
 
@@ -8,6 +9,7 @@ import com.besaba.vmchat2.R;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMap.OnMarkerClickListener;
 import com.google.android.gms.maps.SupportMapFragment;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -22,7 +24,10 @@ import android.widget.CheckBox;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
@@ -105,7 +110,7 @@ public class TrackActivity extends FragmentActivity {
 			mMap = mMapFragment.getMap();// tExtendedMap();
 			// Check if we were successful in obtaining the map.
 			if (mMap != null) {
-				//setUpMap();
+				setUpMap();
 				Log.e(LOG_TAG, "no setUpMap ");
 			}
 		}
@@ -113,34 +118,29 @@ public class TrackActivity extends FragmentActivity {
 
 	private void setUpMap() {
 		Log.e(LOG_TAG, "setUpMap !!!");
-
-		PolylineOptions pl;
-		String who = getIntent().getDataString();
-
-		if ((who == null) || (who.length() < 3))
-			who = "%355472050491531%";
-		Log.e("TrackMActivity", who);
-		CameraUpdate center = null;
-		pl = getLine("(idwho like '" + who + "' and Provider = 'gps')");
-		mMap.addPolyline(pl);
-		if (!pl.getPoints().isEmpty())
-			center = CameraUpdateFactory.newLatLng(pl.getPoints().get(0));
-		pl = getLine("(idwho like '" + who + "' and Provider = 'network')");
-		pl.color(Color.RED);
-		mMap.addPolyline(pl);
-		if (!pl.getPoints().isEmpty())
-			center = CameraUpdateFactory.newLatLng(pl.getPoints().get(0));
-
-		CameraUpdate zoom = CameraUpdateFactory.zoomTo(14);
-		if (center != null)
-			mMap.moveCamera(center);
-		mMap.animateCamera(zoom);
+		mMap.setMyLocationEnabled(true);
+		mMap.setIndoorEnabled(true);
+		mMap.setBuildingsEnabled(true);
+		mMap.setOnMarkerClickListener(new OnMarkerClickListener() {			
+			Circle cir = null;
+			@Override
+			public boolean onMarkerClick(Marker arg0) {
+				if (cir != null)
+					cir.remove();
+				cir = mMap.addCircle(new CircleOptions()
+					.center(arg0.getPosition())
+					.radius(Float.valueOf(arg0.getSnippet()))
+					.strokeWidth(1F));
+				
+				return false;
+			}
+		});
 	}
 
 	private PolylineOptions getLine(String whoS) {
 		final Uri CONTACT_URI = Uri.parse("content://me.noip.allloc.prv/loc");
 		PolylineOptions pl = new PolylineOptions();
-		pl.width(1F);
+		pl.width(0.5F);
 		try {
 			Cursor cursor = getContentResolver().query(CONTACT_URI, null, whoS,
 					null, "DTime desc");
@@ -170,7 +170,6 @@ public class TrackActivity extends FragmentActivity {
 									cursor.getString(cursor
 											.getColumnIndex("Accuracy")))
 							.title(tit));
-
 					double lat = cursor.getDouble(cursor
 							.getColumnIndex("Latitude"));
 					double lon = cursor.getDouble(cursor
@@ -189,7 +188,6 @@ public class TrackActivity extends FragmentActivity {
 
 	public void onClick_gps(View v) {
 		PolylineOptions pl_gps;
-		Toast.makeText(this, "onClick_gps", Toast.LENGTH_SHORT).show();
 		CheckBox cb = (CheckBox) v;
 		if (cb.isChecked()){
 			String who = getIntent().getDataString();
@@ -199,7 +197,7 @@ public class TrackActivity extends FragmentActivity {
 			if (!pl_gps.getPoints().isEmpty())
 				center = CameraUpdateFactory.newLatLng(pl_gps.getPoints().get(0));
 
-			CameraUpdate zoom = CameraUpdateFactory.zoomTo(16);
+			CameraUpdate zoom = CameraUpdateFactory.zoomTo(13);
 			if (center != null){
 				mMap.moveCamera(center);
 				mMap.animateCamera(zoom);
@@ -209,7 +207,6 @@ public class TrackActivity extends FragmentActivity {
 
 	public void onClick_net(View v) {
 		PolylineOptions pl_net;
-		Toast.makeText(this, "onClick_net", Toast.LENGTH_SHORT).show();
 		CheckBox cb = (CheckBox) v;
 		if (cb.isChecked()){
 			String who = getIntent().getDataString();
@@ -220,12 +217,27 @@ public class TrackActivity extends FragmentActivity {
 			if (!pl_net.getPoints().isEmpty())
 				center = CameraUpdateFactory.newLatLng(pl_net.getPoints().get(0));
 
-			CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
+			CameraUpdate zoom = CameraUpdateFactory.zoomTo(13);
 			if (center != null){
 				mMap.moveCamera(center);
 				mMap.animateCamera(zoom);
 			}
 		}else if (plNet != null) plNet.remove();			
+	}
+
+	public void onClick_tst(View v) {
+		Toast.makeText(this, "onClick_net", Toast.LENGTH_SHORT).show();
+		CheckBox cb = (CheckBox) v;
+		if (cb.isChecked()){
+			Toast.makeText(this, " Map clear ", Toast.LENGTH_SHORT).show();
+			mMap.clear();
+			cb.setChecked(false);
+			cb = (CheckBox) findViewById(R.id.chBox_gps);
+			cb.setChecked(false);
+			cb = (CheckBox) findViewById(R.id.chBox_net);
+			cb.setChecked(false);
+			
+		}
 	}
 
 }

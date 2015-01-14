@@ -164,7 +164,7 @@ public class ListWActivity extends FragmentActivity implements
 							contentView
 									.animate()
 									.translationY(
-											visible ? 45 : 0)
+											visible ? 50 : 0)
 									.setDuration(mShortAnimTime);
 
 						} else {
