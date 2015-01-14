@@ -1,10 +1,7 @@
 package kz.alfa;
 
 import java.util.Date;
-import java.util.List;
-
 import kz.alfa.util.Log;
-
 import com.besaba.vmchat2.R;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -22,7 +19,6 @@ import android.view.View;
 import android.view.Window;
 import android.widget.CheckBox;
 import android.widget.Toast;
-
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
@@ -67,7 +63,7 @@ public class TrackActivity extends FragmentActivity {
 			// mMapFragment.bring
 			// fragmentTransaction.add(android.R.id.content, ,
 			// MAP_FRAGMENT_TAG);
-			//fragmentTransaction.addToBackStack(null);
+			// fragmentTransaction.addToBackStack(null);
 			fragmentTransaction.commit();
 		}
 
@@ -121,17 +117,23 @@ public class TrackActivity extends FragmentActivity {
 		mMap.setMyLocationEnabled(true);
 		mMap.setIndoorEnabled(true);
 		mMap.setBuildingsEnabled(true);
-		mMap.setOnMarkerClickListener(new OnMarkerClickListener() {			
+		mMap.setOnMarkerClickListener(new OnMarkerClickListener() {
 			Circle cir = null;
+
 			@Override
 			public boolean onMarkerClick(Marker arg0) {
+				try{
 				if (cir != null)
 					cir.remove();
-				cir = mMap.addCircle(new CircleOptions()
-					.center(arg0.getPosition())
-					.radius(Float.valueOf(arg0.getSnippet()))
-					.strokeWidth(1F));
-				
+				if (!arg0.getSnippet().isEmpty())
+					cir = mMap.addCircle(new CircleOptions()
+							.center(arg0.getPosition())
+							.strokeColor(Color.RED)
+							.radius(Float.valueOf(arg0.getSnippet()))
+							.strokeWidth(1F));
+				} catch (NumberFormatException e){
+					Log.e(LOG_TAG, arg0+e.toString()+arg0.getSnippet());
+				}
 				return false;
 			}
 		});
@@ -156,9 +158,8 @@ public class TrackActivity extends FragmentActivity {
 					String tit = (new Date(cursor.getLong(cursor
 							.getColumnIndex("DTime")))).toString();
 					if (first == null) {
-						first = new MarkerOptions()
-						.position(new LatLng(lat1, lon1))
-						.title(tit);
+						first = new MarkerOptions().position(
+								new LatLng(lat1, lon1)).title(tit);
 						mMap.addMarker(first);
 					}
 					mMap.addMarker(new MarkerOptions()
@@ -189,46 +190,51 @@ public class TrackActivity extends FragmentActivity {
 	public void onClick_gps(View v) {
 		PolylineOptions pl_gps;
 		CheckBox cb = (CheckBox) v;
-		if (cb.isChecked()){
+		if (cb.isChecked()) {
 			String who = getIntent().getDataString();
 			CameraUpdate center = null;
 			pl_gps = getLine("(idwho like '" + who + "' and Provider = 'gps')");
 			plGps = mMap.addPolyline(pl_gps);
 			if (!pl_gps.getPoints().isEmpty())
-				center = CameraUpdateFactory.newLatLng(pl_gps.getPoints().get(0));
+				center = CameraUpdateFactory.newLatLng(pl_gps.getPoints()
+						.get(0));
 
 			CameraUpdate zoom = CameraUpdateFactory.zoomTo(13);
-			if (center != null){
+			if (center != null) {
 				mMap.moveCamera(center);
 				mMap.animateCamera(zoom);
 			}
-		} else if (plGps != null) plGps.remove();			
+		} else if (plGps != null)
+			plGps.remove();
 	}
 
 	public void onClick_net(View v) {
 		PolylineOptions pl_net;
 		CheckBox cb = (CheckBox) v;
-		if (cb.isChecked()){
+		if (cb.isChecked()) {
 			String who = getIntent().getDataString();
 			CameraUpdate center = null;
-			pl_net = getLine("(idwho like '" + who + "' and Provider = 'network')");
+			pl_net = getLine("(idwho like '" + who
+					+ "' and Provider = 'network')");
 			pl_net.color(Color.RED);
 			plNet = mMap.addPolyline(pl_net);
 			if (!pl_net.getPoints().isEmpty())
-				center = CameraUpdateFactory.newLatLng(pl_net.getPoints().get(0));
+				center = CameraUpdateFactory.newLatLng(pl_net.getPoints()
+						.get(0));
 
 			CameraUpdate zoom = CameraUpdateFactory.zoomTo(13);
-			if (center != null){
+			if (center != null) {
 				mMap.moveCamera(center);
 				mMap.animateCamera(zoom);
 			}
-		}else if (plNet != null) plNet.remove();			
+		} else if (plNet != null)
+			plNet.remove();
 	}
 
 	public void onClick_tst(View v) {
 		Toast.makeText(this, "onClick_net", Toast.LENGTH_SHORT).show();
 		CheckBox cb = (CheckBox) v;
-		if (cb.isChecked()){
+		if (cb.isChecked()) {
 			Toast.makeText(this, " Map clear ", Toast.LENGTH_SHORT).show();
 			mMap.clear();
 			cb.setChecked(false);
@@ -236,7 +242,7 @@ public class TrackActivity extends FragmentActivity {
 			cb.setChecked(false);
 			cb = (CheckBox) findViewById(R.id.chBox_net);
 			cb.setChecked(false);
-			
+
 		}
 	}
 
