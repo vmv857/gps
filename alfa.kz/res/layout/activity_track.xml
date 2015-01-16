@@ -25,9 +25,9 @@
         android:id="@+id/chBox_net"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="0dp"
+        android:layout_marginLeft="20dp"
         android:layout_marginTop="0dp"
         android:onClick="onClick_net"
         android:text="" />
@@ -37,8 +37,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_marginLeft="10dp"
-        android:layout_marginTop="10dp"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="0dp"
+        android:layout_marginTop="0dp"
+        android:rotation="45"
         android:onClick="onClick_tst"
         android:text="" />
 
