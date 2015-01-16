@@ -43,7 +43,7 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int chBox_gps=0x7f0a0008;
         public static final int chBox_net=0x7f0a0009;
         public static final int chBox_tst=0x7f0a000a;
-        public static final int clear=0x7f0a0010;
+        public static final int clear=0x7f0a0011;
         public static final int dummy_button=0x7f0a0005;
         public static final int etSend=0x7f0a0003;
         public static final int fullscreen_content=0x7f0a0000;
@@ -51,12 +51,13 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
         public static final int lvMain=0x7f0a0001;
         public static final int map_fragment=0x7f0a0007;
         public static final int map_root=0x7f0a0006;
-        public static final int refresh=0x7f0a000f;
-        public static final int restore=0x7f0a0011;
-        public static final int tvTextCnt=0x7f0a000e;
-        public static final int tvTextWhat=0x7f0a000c;
-        public static final int tvTextWhen=0x7f0a000d;
-        public static final int tvTextWho=0x7f0a000b;
+        public static final int refresh=0x7f0a0010;
+        public static final int restore=0x7f0a0012;
+        public static final int seekBar=0x7f0a000b;
+        public static final int tvTextCnt=0x7f0a000f;
+        public static final int tvTextWhat=0x7f0a000d;
+        public static final int tvTextWhen=0x7f0a000e;
+        public static final int tvTextWho=0x7f0a000c;
     }
     public static final class layout {
         public static final int activity_fullscreen=0x7f030000;

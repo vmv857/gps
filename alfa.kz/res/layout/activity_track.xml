@@ -6,10 +6,10 @@
 
     <RelativeLayout
         android:id="@+id/map_fragment"
-        android:background="@color/blue"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-	
+        android:layout_height="match_parent"
+        android:background="@color/blue" />
+
     <CheckBox
         android:id="@+id/chBox_gps"
         android:layout_width="wrap_content"
@@ -20,6 +20,7 @@
         android:layout_marginTop="0dp"
         android:onClick="onClick_gps"
         android:text="" />
+
     <CheckBox
         android:id="@+id/chBox_net"
         android:layout_width="wrap_content"
@@ -30,16 +31,23 @@
         android:layout_marginTop="0dp"
         android:onClick="onClick_net"
         android:text="" />
-    
+
     <CheckBox
         android:id="@+id/chBox_tst"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginLeft="0dp"
-        android:layout_marginTop="0dp"
+        android:layout_alignParentTop="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
         android:onClick="onClick_tst"
         android:text="" />
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:max="1000"
+        android:progress="300" />
 
 </RelativeLayout>

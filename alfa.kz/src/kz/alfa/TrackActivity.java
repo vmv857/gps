@@ -18,6 +18,7 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.widget.CheckBox;
+import android.widget.SeekBar;
 import android.widget.Toast;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
@@ -28,7 +29,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-public class TrackActivity extends FragmentActivity {
+public class TrackActivity extends FragmentActivity implements SeekBar.OnSeekBarChangeListener{
 	private static String LOG_TAG = "TrackActivity";
 	private static final String MAP_FRAGMENT_TAG = "map";
 	private GoogleMap mMap;
@@ -36,6 +37,7 @@ public class TrackActivity extends FragmentActivity {
 	private long backMills = 0;
 	private Polyline plGps;
 	private Polyline plNet;
+	private SeekBar seekBar;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +73,8 @@ public class TrackActivity extends FragmentActivity {
 		// services might
 		// not be available.
 		setUpMapIfNeeded();
+		seekBar = (SeekBar)findViewById(R.id.seekBar);
+		seekBar.setOnSeekBarChangeListener(this);
 	}
 
 	@Override
@@ -81,8 +85,7 @@ public class TrackActivity extends FragmentActivity {
 			if (keyCode == KeyEvent.KEYCODE_BACK) {
 				// Log.e(LOG_TAG,
 				// (System.currentTimeMillis()-backMills)+"onKeyDown KEYCODE_BACK");
-				Toast.makeText(this, "to exit press back again (in 3 sec)",
-						Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, "to exit press back again (in 3 sec)",	Toast.LENGTH_SHORT).show();
 				backMills = System.currentTimeMillis();
 				return false;
 			}
@@ -204,6 +207,8 @@ public class TrackActivity extends FragmentActivity {
 				mMap.moveCamera(center);
 				mMap.animateCamera(zoom);
 			}
+			seekBar.setMax(pl_gps.getPoints().size());
+			seekBar.setProgress(pl_gps.getPoints().size());
 		} else if (plGps != null)
 			plGps.remove();
 	}
@@ -227,6 +232,8 @@ public class TrackActivity extends FragmentActivity {
 				mMap.moveCamera(center);
 				mMap.animateCamera(zoom);
 			}
+			seekBar.setMax(pl_net.getPoints().size());
+			seekBar.setProgress(0);
 		} else if (plNet != null)
 			plNet.remove();
 	}
@@ -242,8 +249,24 @@ public class TrackActivity extends FragmentActivity {
 			cb.setChecked(false);
 			cb = (CheckBox) findViewById(R.id.chBox_net);
 			cb.setChecked(false);
-
 		}
 	}
 
+	@Override
+	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+		LatLng l = new LatLng(1, 1);
+		if (seekBar.getMax() == plGps.getPoints().size())
+			l = plGps.getPoints().get(progress);
+		if (seekBar.getMax() == plNet.getPoints().size())
+			l = plNet.getPoints().get(progress);
+		Toast.makeText(this, l.toString()+" "+progress+" ", Toast.LENGTH_SHORT).show();
+	}
+
+	@Override
+	public void onStartTrackingTouch(SeekBar seekBar) {
+	}
+
+	@Override
+	public void onStopTrackingTouch(SeekBar seekBar) {
+	}
 }
