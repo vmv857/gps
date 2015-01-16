@@ -255,9 +255,9 @@ public class TrackActivity extends FragmentActivity implements SeekBar.OnSeekBar
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 		LatLng l = new LatLng(1, 1);
-		if (seekBar.getMax() == plGps.getPoints().size())
+		if ((plGps!=null)&&(seekBar.getMax() == plGps.getPoints().size()))
 			l = plGps.getPoints().get(progress);
-		if (seekBar.getMax() == plNet.getPoints().size())
+		if ((plGps!=null)&&(seekBar.getMax() == plNet.getPoints().size()))
 			l = plNet.getPoints().get(progress);
 		Toast.makeText(this, l.toString()+" "+progress+" ", Toast.LENGTH_SHORT).show();
 	}
