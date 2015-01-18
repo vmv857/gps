@@ -29,7 +29,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
-public class TrackActivity extends FragmentActivity implements SeekBar.OnSeekBarChangeListener{
+public class TrackActivity extends FragmentActivity implements
+		SeekBar.OnSeekBarChangeListener {
 	private static String LOG_TAG = "TrackActivity";
 	private static final String MAP_FRAGMENT_TAG = "map";
 	private GoogleMap mMap;
@@ -73,7 +74,7 @@ public class TrackActivity extends FragmentActivity implements SeekBar.OnSeekBar
 		// services might
 		// not be available.
 		setUpMapIfNeeded();
-		seekBar = (SeekBar)findViewById(R.id.seekBar);
+		seekBar = (SeekBar) findViewById(R.id.seekBar);
 		seekBar.setOnSeekBarChangeListener(this);
 	}
 
@@ -85,7 +86,8 @@ public class TrackActivity extends FragmentActivity implements SeekBar.OnSeekBar
 			if (keyCode == KeyEvent.KEYCODE_BACK) {
 				// Log.e(LOG_TAG,
 				// (System.currentTimeMillis()-backMills)+"onKeyDown KEYCODE_BACK");
-				Toast.makeText(this, "to exit press back again (in 3 sec)",	Toast.LENGTH_SHORT).show();
+				Toast.makeText(this, "to exit press back again (in 3 sec)",
+						Toast.LENGTH_SHORT).show();
 				backMills = System.currentTimeMillis();
 				return false;
 			}
@@ -125,17 +127,17 @@ public class TrackActivity extends FragmentActivity implements SeekBar.OnSeekBar
 
 			@Override
 			public boolean onMarkerClick(Marker arg0) {
-				try{
-				if (cir != null)
-					cir.remove();
-				if (!arg0.getSnippet().isEmpty())
-					cir = mMap.addCircle(new CircleOptions()
-							.center(arg0.getPosition())
-							.strokeColor(Color.RED)
-							.radius(Float.valueOf(arg0.getSnippet()))
-							.strokeWidth(1F));
-				} catch (NumberFormatException e){
-					Log.e(LOG_TAG, arg0+e.toString()+arg0.getSnippet());
+				try {
+					if (cir != null)
+						cir.remove();
+					if (!arg0.getSnippet().isEmpty())
+						cir = mMap.addCircle(new CircleOptions()
+								.center(arg0.getPosition())
+								.strokeColor(Color.RED)
+								.radius(Float.valueOf(arg0.getSnippet()))
+								.strokeWidth(1F));
+				} catch (NumberFormatException e) {
+					Log.e(LOG_TAG, arg0 + e.toString() + arg0.getSnippet());
 				}
 				return false;
 			}
@@ -198,17 +200,17 @@ public class TrackActivity extends FragmentActivity implements SeekBar.OnSeekBar
 			CameraUpdate center = null;
 			pl_gps = getLine("(idwho like '" + who + "' and Provider = 'gps')");
 			plGps = mMap.addPolyline(pl_gps);
-			if (!pl_gps.getPoints().isEmpty())
+			if (!pl_gps.getPoints().isEmpty()) {
 				center = CameraUpdateFactory.newLatLng(pl_gps.getPoints()
 						.get(0));
-
-			CameraUpdate zoom = CameraUpdateFactory.zoomTo(13);
-			if (center != null) {
-				mMap.moveCamera(center);
-				mMap.animateCamera(zoom);
+				seekBar.setMax(pl_gps.getPoints().size());
+				seekBar.setProgress(pl_gps.getPoints().size());
 			}
-			seekBar.setMax(pl_gps.getPoints().size());
-			seekBar.setProgress(pl_gps.getPoints().size());
+			CameraUpdate zoom = CameraUpdateFactory.zoomTo(18);
+			if (center != null) {
+				mMap.animateCamera(zoom);
+				mMap.moveCamera(center);
+			}
 		} else if (plGps != null)
 			plGps.remove();
 	}
@@ -223,17 +225,17 @@ public class TrackActivity extends FragmentActivity implements SeekBar.OnSeekBar
 					+ "' and Provider = 'network')");
 			pl_net.color(Color.RED);
 			plNet = mMap.addPolyline(pl_net);
-			if (!pl_net.getPoints().isEmpty())
+			if (!pl_net.getPoints().isEmpty()) {
 				center = CameraUpdateFactory.newLatLng(pl_net.getPoints()
 						.get(0));
-
-			CameraUpdate zoom = CameraUpdateFactory.zoomTo(13);
-			if (center != null) {
-				mMap.moveCamera(center);
-				mMap.animateCamera(zoom);
+				seekBar.setMax(pl_net.getPoints().size());
+				seekBar.setProgress(0);
 			}
-			seekBar.setMax(pl_net.getPoints().size());
-			seekBar.setProgress(0);
+			CameraUpdate zoom = CameraUpdateFactory.zoomTo(17);
+			if (center != null) {
+				mMap.animateCamera(zoom);
+				mMap.moveCamera(center);
+			}
 		} else if (plNet != null)
 			plNet.remove();
 	}
@@ -253,13 +255,20 @@ public class TrackActivity extends FragmentActivity implements SeekBar.OnSeekBar
 	}
 
 	@Override
-	public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+	public void onProgressChanged(SeekBar seekBar, int progress,
+			boolean fromUser) {
 		LatLng l = new LatLng(1, 1);
-		if ((plGps!=null)&&(seekBar.getMax() == plGps.getPoints().size()))
-			l = plGps.getPoints().get(progress);
-		if ((plGps!=null)&&(seekBar.getMax() == plNet.getPoints().size()))
-			l = plNet.getPoints().get(progress);
-		Toast.makeText(this, l.toString()+" "+progress+" ", Toast.LENGTH_SHORT).show();
+		if (fromUser)
+			if ((plGps != null) && (progress <= plGps.getPoints().size())) {
+				l = plGps.getPoints().get(progress);
+				mMap.moveCamera(CameraUpdateFactory.newLatLng(l));
+			} else if ((plGps != null)
+					&& (progress <= plNet.getPoints().size())) {
+				l = plNet.getPoints().get(progress);
+				mMap.moveCamera(CameraUpdateFactory.newLatLng(l));
+			} else
+				Toast.makeText(this, l.toString() + " " + progress + " ",
+						Toast.LENGTH_SHORT).show();
 	}
 
 	@Override
