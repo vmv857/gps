@@ -1,5 +1,6 @@
 package kz.alfa;
 
+import java.util.ArrayList;
 import java.util.Date;
 import kz.alfa.util.Log;
 import com.besaba.vmchat2.R;
@@ -39,6 +40,8 @@ public class TrackActivity extends FragmentActivity implements
 	private Polyline plGps;
 	private Polyline plNet;
 	private SeekBar seekBar;
+	private ArrayList<Marker> mrGps = new ArrayList<Marker>();
+	private ArrayList<Marker> mrNet = new ArrayList<Marker>();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -144,7 +147,7 @@ public class TrackActivity extends FragmentActivity implements
 		});
 	}
 
-	private PolylineOptions getLine(String whoS) {
+	private PolylineOptions getLine(String whoS, ArrayList<Marker> mrList) {
 		final Uri CONTACT_URI = Uri.parse("content://me.noip.allloc.prv/loc");
 		PolylineOptions pl = new PolylineOptions();
 		pl.width(0.5F);
@@ -163,11 +166,15 @@ public class TrackActivity extends FragmentActivity implements
 					String tit = (new Date(cursor.getLong(cursor
 							.getColumnIndex("DTime")))).toString();
 					if (first == null) {
-						first = new MarkerOptions().position(
-								new LatLng(lat1, lon1)).title(tit);
+						first = new MarkerOptions()
+								.snippet(
+										cursor.getString(cursor
+												.getColumnIndex("Accuracy")))
+								.position(new LatLng(lat1, lon1))
+								.title(tit + whoS);
 						mMap.addMarker(first);
 					}
-					mMap.addMarker(new MarkerOptions()
+					Marker m = mMap.addMarker(new MarkerOptions()
 							.anchor(0.5f, 0.5f)
 							.icon(BitmapDescriptorFactory
 									.fromResource(R.drawable.circle))
@@ -175,12 +182,9 @@ public class TrackActivity extends FragmentActivity implements
 							.snippet(
 									cursor.getString(cursor
 											.getColumnIndex("Accuracy")))
-							.title(tit));
-					double lat = cursor.getDouble(cursor
-							.getColumnIndex("Latitude"));
-					double lon = cursor.getDouble(cursor
-							.getColumnIndex("Longitude"));
-					pl.add(new LatLng(lat, lon));
+							.title(tit + whoS));
+					mrList.add(m);
+					pl.add(new LatLng(lat1, lon1));
 				} while (cursor.moveToNext());
 				cursor.close();
 			}
@@ -198,7 +202,8 @@ public class TrackActivity extends FragmentActivity implements
 		if (cb.isChecked()) {
 			String who = getIntent().getDataString();
 			CameraUpdate center = null;
-			pl_gps = getLine("(idwho like '" + who + "' and Provider = 'gps')");
+			pl_gps = getLine("(idwho like '" + who + "' and Provider = 'gps')",
+					mrGps);
 			plGps = mMap.addPolyline(pl_gps);
 			if (!pl_gps.getPoints().isEmpty()) {
 				center = CameraUpdateFactory.newLatLng(pl_gps.getPoints()
@@ -222,7 +227,7 @@ public class TrackActivity extends FragmentActivity implements
 			String who = getIntent().getDataString();
 			CameraUpdate center = null;
 			pl_net = getLine("(idwho like '" + who
-					+ "' and Provider = 'network')");
+					+ "' and Provider = 'network')", mrGps);
 			pl_net.color(Color.RED);
 			plNet = mMap.addPolyline(pl_net);
 			if (!pl_net.getPoints().isEmpty()) {
@@ -246,6 +251,8 @@ public class TrackActivity extends FragmentActivity implements
 		if (cb.isChecked()) {
 			Toast.makeText(this, " Map clear ", Toast.LENGTH_SHORT).show();
 			mMap.clear();
+			mrGps.clear();
+			mrNet.clear();
 			cb.setChecked(false);
 			cb = (CheckBox) findViewById(R.id.chBox_gps);
 			cb.setChecked(false);
@@ -257,18 +264,21 @@ public class TrackActivity extends FragmentActivity implements
 	@Override
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
-		LatLng l = new LatLng(1, 1);
-		if (fromUser)
-			if ((plGps != null) && (progress <= plGps.getPoints().size())) {
+		LatLng l;
+		if (fromUser && (progress > 0)) {
+			if ((plGps != null) && (progress < plGps.getPoints().size())) {
 				l = plGps.getPoints().get(progress);
 				mMap.moveCamera(CameraUpdateFactory.newLatLng(l));
-			} else if ((plGps != null)
-					&& (progress <= plNet.getPoints().size())) {
+				if (mrGps.size() >= progress)
+					mrGps.get(progress).showInfoWindow();
+			}
+			if ((plNet != null) && (progress < plNet.getPoints().size())) {
 				l = plNet.getPoints().get(progress);
 				mMap.moveCamera(CameraUpdateFactory.newLatLng(l));
-			} else
-				Toast.makeText(this, l.toString() + " " + progress + " ",
-						Toast.LENGTH_SHORT).show();
+				if (mrNet.size() >= progress)
+					mrNet.get(progress).showInfoWindow();
+			}
+		}
 	}
 
 	@Override
