@@ -35,8 +35,9 @@ or to a theme attribute in the form "<code>?[<i>package</i>:][<i>type</i>:]<i>na
     }
     public static final class drawable {
         public static final int circle=0x7f020000;
-        public static final int ic_launcher=0x7f020001;
-        public static final int ic_launcher2=0x7f020002;
+        public static final int circle_g=0x7f020001;
+        public static final int ic_launcher=0x7f020002;
+        public static final int ic_launcher2=0x7f020003;
     }
     public static final class id {
         public static final int cbScroll=0x7f0a0004;
