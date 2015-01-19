@@ -137,7 +137,7 @@ public class TrackActivity extends FragmentActivity implements
 						cir = mMap.addCircle(new CircleOptions()
 								.center(arg0.getPosition())
 								.strokeColor(Color.RED)
-								.radius(2*Float.valueOf(arg0.getSnippet()))
+								.radius(2 * Float.valueOf(arg0.getSnippet()))
 								.strokeWidth(2F));
 				} catch (NumberFormatException e) {
 					Log.e(LOG_TAG, arg0 + e.toString() + arg0.getSnippet());
@@ -147,14 +147,16 @@ public class TrackActivity extends FragmentActivity implements
 		});
 	}
 
-	private PolylineOptions getLine(String whoS, ArrayList<Marker> mrList, int res) {
+	private PolylineOptions getLine(String whoS, ArrayList<Marker> mrList,
+			int res) {
 		final Uri CONTACT_URI = Uri.parse("content://me.noip.allloc.prv/loc");
 		PolylineOptions pl = new PolylineOptions();
 		pl.width(0.5F);
 		try {
 			Cursor cursor = getContentResolver().query(CONTACT_URI, null, whoS,
 					null, "DTime desc");
-			Log.e("TrackMActivity", whoS + " getContentResolver getCount = "+ cursor.getCount());
+			Log.e("TrackMActivity", whoS + " getContentResolver getCount = "
+					+ cursor.getCount());
 			if (cursor.moveToFirst()) {
 				MarkerOptions first = null;
 				do {
@@ -170,18 +172,17 @@ public class TrackActivity extends FragmentActivity implements
 										cursor.getString(cursor
 												.getColumnIndex("Accuracy")))
 								.position(new LatLng(lat1, lon1))
-								.title(tit+"\n"+whoS);
+								.title(tit + "\n" + whoS);
 						mMap.addMarker(first);
 					}
 					Marker m = mMap.addMarker(new MarkerOptions()
 							.anchor(0.5f, 0.5f)
-							.icon(BitmapDescriptorFactory
-									.fromResource(res))
+							.icon(BitmapDescriptorFactory.fromResource(res))
 							.position(new LatLng(lat1, lon1))
 							.snippet(
 									cursor.getString(cursor
 											.getColumnIndex("Accuracy")))
-							.title(tit+"\n"+whoS));
+							.title(tit + "\n" + whoS));
 					mrList.add(m);
 					pl.add(new LatLng(lat1, lon1));
 				} while (cursor.moveToNext());
@@ -201,7 +202,8 @@ public class TrackActivity extends FragmentActivity implements
 		if (cb.isChecked()) {
 			String who = getIntent().getDataString();
 			CameraUpdate center = null;
-			pl_gps = getLine("(idwho like '" + who + "' and Provider = 'gps')",	mrGps, R.drawable.circle_g);
+			pl_gps = getLine("(idwho like '" + who + "' and Provider = 'gps')",
+					mrGps, R.drawable.circle_g);
 			plGps = mMap.addPolyline(pl_gps);
 			if (!pl_gps.getPoints().isEmpty()) {
 				center = CameraUpdateFactory.newLatLng(pl_gps.getPoints()
@@ -209,15 +211,15 @@ public class TrackActivity extends FragmentActivity implements
 				seekBar.setMax(pl_gps.getPoints().size());
 				seekBar.setProgress(pl_gps.getPoints().size());
 			}
-			CameraUpdate zoom = CameraUpdateFactory.zoomTo(18);
+			CameraUpdate zoom = CameraUpdateFactory.zoomTo(13);
 			if (center != null) {
 				mMap.animateCamera(zoom);
 				mMap.moveCamera(center);
 			}
-		} else if (plGps != null){
+		} else if (plGps != null) {
 			plGps.remove();
 			plGps.setPoints(new ArrayList<LatLng>());
-			for(int i=1; i < mrGps.size(); i++)
+			for (int i = 1; i < mrGps.size(); i++)
 				mrGps.get(i).remove();
 			mrGps.clear();
 			seekBar.setMax(plNet.getPoints().size());
@@ -230,7 +232,8 @@ public class TrackActivity extends FragmentActivity implements
 		if (cb.isChecked()) {
 			String who = getIntent().getDataString();
 			CameraUpdate center = null;
-			pl_net = getLine("(idwho like '"+who+"' and Provider = 'network')", mrGps, R.drawable.circle);
+			pl_net = getLine("(idwho like '" + who
+					+ "' and Provider = 'network')", mrNet, R.drawable.circle);
 			pl_net.color(Color.RED);
 			plNet = mMap.addPolyline(pl_net);
 			if (!pl_net.getPoints().isEmpty()) {
@@ -239,19 +242,20 @@ public class TrackActivity extends FragmentActivity implements
 				seekBar.setMax(pl_net.getPoints().size());
 				seekBar.setProgress(0);
 			}
-			CameraUpdate zoom = CameraUpdateFactory.zoomTo(17);
+			CameraUpdate zoom = CameraUpdateFactory.zoomTo(12);
 			if (center != null) {
 				mMap.animateCamera(zoom);
 				mMap.moveCamera(center);
 			}
-		} else if (plNet != null){
+		} else if (plNet != null) {
 			plNet.remove();
 			plNet.setPoints(new ArrayList<LatLng>());
-			for(int i=1; i < mrNet.size(); i++)
+			for (int i = 1; i < mrNet.size(); i++)
 				mrNet.get(i).remove();
 			mrNet.clear();
 			seekBar.setMax(plGps.getPoints().size());
 		}
+
 	}
 
 	public void onClick_tst(View v) {
